@@ -4,152 +4,246 @@ import { formatNumber, parseNumber } from '../utils/format'
 
 const TOTAL_ROWS = 6
 
-export default function PreviewModal({ formData, onClose }) {
+export default function PreviewModal({ formData, onClose, onSignatureChange }) {
   const total = formData.items.reduce((sum, item) => sum + parseNumber(item.qty) * parseNumber(item.price), 0)
-  const cell = (style = {}) => ({ border: '1px solid #333', padding: '3px 6px', ...style })
+
+  const td = (style = {}) => ({
+    border: '1px solid #000',
+    padding: '0 6px',
+    textAlign: 'center',
+    verticalAlign: 'middle',
+    fontSize: 10,
+    lineHeight: 1.4,
+    overflow: 'visible',
+    ...style,
+  })
+
+  const hd = (style = {}) => td({ background: '#f0f0f0', fontWeight: 500, ...style })
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-gray-900">
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-900">
-        <button onClick={onClose} className="text-white text-sm">← 돌아가기</button>
-        <span className="text-white font-semibold text-sm">미리보기</span>
-        <div className="w-16" />
+    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', flexDirection: 'column', background: '#1f2937' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: '#111827' }}>
+        <button onClick={onClose} style={{ color: 'white', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}>← 돌아가기</button>
+        <span style={{ color: 'white', fontWeight: 600, fontSize: 13 }}>미리보기</span>
+        <div style={{ width: 60 }} />
       </div>
-      <div className="flex-1 overflow-auto bg-gray-700 p-3">
-        <div id="preview-document" style={{fontFamily:"'Malgun Gothic','맑은 고딕',sans-serif",background:'white',padding:16,maxWidth:680,margin:'0 auto',fontSize:10}}>
-          <h1 style={{textAlign:'center',fontSize:20,fontWeight:'bold',letterSpacing:8,marginBottom:10}}>발 주 서</h1>
-          <table style={{width:'100%',borderCollapse:'collapse',marginBottom:4}}>
+
+      <div style={{ flex: 1, overflow: 'auto', background: '#374151', padding: 12 }}>
+        <div
+          id="preview-document"
+          style={{
+            fontFamily: "'Malgun Gothic','맑은 고딕','Nanum Gothic',sans-serif",
+            fontSize: 11,
+            color: '#000',
+            background: 'white',
+            padding: 16,
+            maxWidth: 680,
+            margin: '0 auto',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+            <div style={{ fontSize: 20, fontWeight: 500, letterSpacing: 8, paddingTop: 8, alignSelf: 'center' }}>발 주 서</div>
+            <table style={{ borderCollapse: 'collapse', width: 300, tableLayout: 'fixed', flexShrink: 0 }}>
+              <tbody>
+                <tr style={{ height: 20 }}>
+                  <td rowSpan={3} style={td({ width: 24, fontSize: 10, lineHeight: 1.6 })}>결<br/><br/>재</td>
+                  <td style={hd({ width: 60 })}>작성</td>
+                  <td style={hd({ width: 34 })}>열람</td>
+                  <td style={hd({ width: 34 })}>열람</td>
+                  <td style={hd({ width: 34 })}>열람</td>
+                  <td style={hd({ width: 60 })}>승인</td>
+                </tr>
+                <tr style={{ height: 40 }}>
+                  <td style={td({ padding: '2px 4px', position: 'relative' })}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, height: '100%' }}>
+                      {formData.signature
+                        ? <img src={formData.signature} style={{ maxWidth: '100%', maxHeight: 28, objectFit: 'contain' }} alt="서명" />
+                        : <span style={{ fontSize: 12 }}>{formData.salesRep}</span>
+                      }
+                      {formData.signature ? (
+                        <span className="no-pdf" onClick={() => onSignatureChange('')} style={{ cursor: 'pointer', fontSize: 7.5, color: '#bbb', lineHeight: 1 }}>[서명 삭제]</span>
+                      ) : (
+                        <label className="no-pdf" style={{ cursor: 'pointer', fontSize: 7.5, color: '#bbb', lineHeight: 1 }}>
+                          [서명 이미지 넣기]
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => {
+                            const file = e.target.files[0]
+                            if (!file) return
+                            const reader = new FileReader()
+                            reader.onload = ev => onSignatureChange(ev.target.result)
+                            reader.readAsDataURL(file)
+                          }} />
+                        </label>
+                      )}
+                    </div>
+                  </td>
+                  <td style={td()}></td>
+                  <td style={td()}></td>
+                  <td style={td()}></td>
+                  <td style={td()}></td>
+                </tr>
+                <tr style={{ height: 14 }}>
+                  <td style={td({ fontSize: 9 })}></td>
+                  <td style={td()}></td>
+                  <td style={td()}></td>
+                  <td style={td()}></td>
+                  <td style={td()}></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed', marginBottom: 8 }}>
+            <colgroup>
+              <col style={{ width: 72 }} /><col /><col style={{ width: 56 }} /><col />
+            </colgroup>
             <tbody>
-              <tr>
-                <td colSpan={3} rowSpan={2} style={cell({verticalAlign:'top'})}>
-                  <div><strong>발주번호 :</strong> {formData.orderNumber}</div>
-                  <div style={{marginTop:6,fontSize:9,color:'#555'}}>아래와 같이 발주 하오니 납품하여 주시기 바랍니다.</div>
+              <tr style={{ height: 46 }}>
+                <td style={hd()}>발주번호</td>
+                <td colSpan={3} style={td({ textAlign: 'left', lineHeight: 1.9 })}>
+                  {formData.orderNumber}<br/>
+                  <span style={{ fontSize: 10, color: '#555' }}>아래와 같이 발주 하오니 납품하여 주시기 바랍니다.</span>
                 </td>
-                <td style={cell({textAlign:'center',fontWeight:'bold',width:48})}>작 성</td>
-                <td style={cell({textAlign:'center',fontWeight:'bold',width:48})}>열 람</td>
-                <td style={cell({textAlign:'center',fontWeight:'bold',width:48})}>승 인</td>
               </tr>
-              <tr>
-                <td style={cell({height:28})}></td>
-                <td style={cell()}></td>
-                <td style={cell()}></td>
+              <tr style={{ height: 26 }}>
+                <td style={hd()}>주문일자</td>
+                <td style={td({ textAlign: 'left' })}>{formData.orderDate}</td>
+                <td style={hd()}>현장명</td>
+                <td style={td({ textAlign: 'left' })}>{formData.siteName}</td>
               </tr>
-              <tr>
-                <td style={cell({fontWeight:'bold',whiteSpace:'nowrap',width:60})}>주문일자</td>
-                <td colSpan={2} style={cell()}>{formData.orderDate}</td>
-                <td colSpan={3} style={cell()}></td>
-              </tr>
-              <tr>
-                <td style={cell({fontWeight:'bold'})}>영업담당자</td>
-                <td style={cell()}>{formData.salesRep}</td>
-                <td style={cell({fontWeight:'bold'})}>현장명</td>
-                <td colSpan={3} style={cell()}>{formData.siteName}</td>
-              </tr>
-              <tr>
-                <td style={cell()}></td>
-                <td style={cell()}></td>
-                <td style={cell({fontWeight:'bold'})}>접수자</td>
-                <td colSpan={3} style={cell()}>{formData.receiver}</td>
+              <tr style={{ height: 26 }}>
+                <td style={hd()}>영업담당자</td>
+                <td style={td({ textAlign: 'left' })}>{formData.salesRep}</td>
+                <td style={hd()}>접수자</td>
+                <td style={td({ textAlign: 'left' })}>{formData.receiver}</td>
               </tr>
             </tbody>
           </table>
-          <table style={{width:'100%',borderCollapse:'collapse',marginBottom:4}}>
+
+          <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed', marginBottom: 8 }}>
+            <colgroup>
+              <col style={{ width: 32 }} />
+              <col style={{ width: '22%' }} />
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '8%' }} />
+              <col style={{ width: '8%' }} />
+              <col style={{ width: '10%' }} />
+              <col style={{ width: '10%' }} />
+              <col style={{ width: '10%' }} />
+            </colgroup>
             <tbody>
-              <tr>
-                <td style={cell({fontWeight:'bold',textAlign:'center',width:40})}>거 리</td>
-                <td style={cell({width:60})}>{formData.distance ? formData.distance+' km' : ''}</td>
-                <td style={cell()}>
-                  희망출하공장&nbsp;&nbsp;
-                  {['보령공장','순천공장','하동공장'].map(f=>(
-                    <span key={f} style={{marginRight:10}}>{f}&nbsp;[{formData.factory===f?'O':' '}]</span>
+              <tr style={{ height: 26 }}>
+                <td style={hd()}>거리</td>
+                <td style={td({ textAlign: 'left' })}>{formData.distance ? formData.distance + ' km' : ''}</td>
+                <td style={hd()}>희망출하공장</td>
+                <td colSpan={5} style={td({ textAlign: 'left' })}>
+                  {['보령공장', '순천공장', '하동공장'].map(f => (
+                    <span key={f} style={{ marginRight: 10 }}>
+                      {f} [{formData.factory === f ? 'O' : ' '}]
+                    </span>
                   ))}
                 </td>
               </tr>
-            </tbody>
-          </table>
-          <table style={{width:'100%',borderCollapse:'collapse',marginBottom:4}}>
-            <thead>
-              <tr style={{backgroundColor:'#f5f5f5'}}>
-                {['번호','물 품 명','규격','단위','수량','단가','금 액','비 고'].map((h,i)=>(
-                  <th key={i} style={cell({textAlign:'center',fontWeight:'bold'})}>{h}</th>
+              <tr style={{ height: 24 }}>
+                {['번호', '물품명', '규격', '단위', '수량', '단가', '금액', '비고'].map(h => (
+                  <td key={h} style={hd()}>{h}</td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
-              {[...Array(TOTAL_ROWS)].map((_,i)=>{
+              {[...Array(TOTAL_ROWS)].map((_, i) => {
                 const item = formData.items[i]
                 const hasData = item && item.name
                 const qty = hasData ? parseNumber(item.qty) : 0
                 const price = hasData ? parseNumber(item.price) : 0
                 const amount = qty * price
+                const isFirstBlank = i === formData.items.length
                 return (
-                  <tr key={i} style={{height:24}}>
-                    <td style={cell({textAlign:'center'})}>{i+1}</td>
-                    <td style={cell()}>{hasData ? item.name : (i>=formData.items.length ? '"이하여백"' : '')}</td>
-                    <td style={cell({textAlign:'center'})}>{hasData ? item.spec : ''}</td>
-                    <td style={cell({textAlign:'center'})}>{hasData ? item.unit : ''}</td>
-                    <td style={cell({textAlign:'right'})}>{hasData&&qty>0?formatNumber(qty):''}</td>
-                    <td style={cell({textAlign:'right'})}>{hasData&&price>0?formatNumber(price):''}</td>
-                    <td style={cell({textAlign:'right'})}>{amount>0?formatNumber(amount):''}</td>
-                    <td style={cell({textAlign:'center'})}>{hasData?item.note:''}</td>
+                  <tr key={i} style={{ height: 26 }}>
+                    <td style={td()}>{i + 1}</td>
+                    <td style={td({ textAlign: 'left' })}>
+                      {hasData ? item.name : (isFirstBlank ? '"이하여백"' : '')}
+                    </td>
+                    <td style={td()}>{hasData ? item.spec : ''}</td>
+                    <td style={td()}>{hasData ? item.unit : ''}</td>
+                    <td style={td({ textAlign: 'right' })}>{hasData && qty > 0 ? formatNumber(qty) : ''}</td>
+                    <td style={td({ textAlign: 'right' })}>{hasData && price > 0 ? formatNumber(price) : ''}</td>
+                    <td style={td({ textAlign: 'right' })}>{amount > 0 ? formatNumber(amount) : ''}</td>
+                    <td style={td()}>{hasData ? item.note : ''}</td>
                   </tr>
                 )
               })}
-              <tr>
-                <td colSpan={6} style={cell({textAlign:'center',fontWeight:'bold'})}>합 계</td>
-                <td style={cell({textAlign:'right',fontWeight:'bold'})}>{total>0?formatNumber(total):''}</td>
-                <td style={cell()}></td>
+              <tr style={{ height: 26 }}>
+                <td colSpan={6} style={td({ fontWeight: 500 })}>합 &nbsp;&nbsp; 계</td>
+                <td colSpan={2} style={td({ textAlign: 'right', fontWeight: 600 })}>{total > 0 ? formatNumber(total) : ''}</td>
               </tr>
             </tbody>
           </table>
-          <table style={{width:'100%',borderCollapse:'collapse',marginBottom:4}}>
+
+          <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed', marginBottom: 8 }}>
+            <colgroup>
+              <col style={{ width: '15%' }} />
+              <col style={{ width: '28%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '18%' }} />
+              <col style={{ width: '10%' }} />
+              <col style={{ width: '16%' }} />
+            </colgroup>
             <tbody>
-              <tr>
-                <td rowSpan={3} style={cell({fontWeight:'bold',textAlign:'center',whiteSpace:'nowrap',width:48})}>납품<br/>업체</td>
-                <td colSpan={2} style={cell()}>{formData.supplier}</td>
-                <td style={cell({fontWeight:'bold',textAlign:'center',whiteSpace:'nowrap',width:52})}>납품업체<br/>담당자</td>
-                <td colSpan={2} style={cell()}>{formData.supplierContact}</td>
+              <tr style={{ height: 26 }}>
+                <td style={hd()}>납품업체</td>
+                <td style={td({ textAlign: 'left' })}>{formData.supplier}</td>
+                <td style={hd()}>납품업체담당자</td>
+                <td colSpan={3} style={td({ textAlign: 'left' })}>{formData.supplierContact}</td>
               </tr>
-              <tr>
-                <td colSpan={2} style={cell()}></td>
-                <td style={cell({fontWeight:'bold',textAlign:'center'})}>납품일자</td>
-                <td colSpan={2} style={cell()}>{formData.deliveryDate}</td>
+              <tr style={{ height: 26 }}>
+                <td style={hd()}>현장주소</td>
+                <td style={td({ textAlign: 'left' })}>{formData.siteAddress}</td>
+                <td style={hd()}>납품일자</td>
+                <td colSpan={3} style={td({ textAlign: 'left' })}>{formData.deliveryDate}</td>
               </tr>
-              <tr>
-                <td colSpan={2} style={cell()}></td>
-                <td style={cell({fontWeight:'bold',textAlign:'center'})}>Tel</td>
-                <td colSpan={2} style={cell()}>{formData.tel}</td>
+              <tr style={{ height: 26 }}>
+                <td style={hd()}>현장관리자</td>
+                <td style={td({ textAlign: 'left' })}>{formData.siteManager}</td>
+                <td style={hd()}>H.P</td>
+                <td style={td({ textAlign: 'left' })}>{formData.hp}</td>
+                <td style={hd()}>Tel</td>
+                <td style={td({ textAlign: 'left' })}>{formData.tel}</td>
               </tr>
-              <tr>
-                <td style={cell({fontWeight:'bold',textAlign:'center',whiteSpace:'nowrap'})}>현장<br/>주소</td>
-                <td colSpan={2} style={cell()}>{formData.siteAddress}</td>
-                <td style={cell({fontWeight:'bold',textAlign:'center'})}>H.P</td>
-                <td colSpan={2} style={cell()}>{formData.hp}</td>
-              </tr>
-              <tr>
-                <td style={cell({fontWeight:'bold',textAlign:'center',whiteSpace:'nowrap'})}>현장<br/>관리자</td>
-                <td style={cell()}>{formData.siteManager}</td>
-                <td style={cell({fontWeight:'bold',textAlign:'center'})}>시공사</td>
-                <td style={cell()}>{formData.constructor}</td>
-                <td style={cell({fontWeight:'bold',textAlign:'center'})}>협력사</td>
-                <td style={cell()}>{formData.partner}</td>
-              </tr>
-              <tr>
-                <td style={cell({fontWeight:'bold',textAlign:'center',whiteSpace:'nowrap'})}>시행사,<br/>발주처</td>
-                <td colSpan={5} style={cell()}>{formData.developer}</td>
+              <tr style={{ height: 26 }}>
+                <td style={hd()}>시행사, 발주처</td>
+                <td style={td({ textAlign: 'left' })}>{formData.developer}</td>
+                <td style={hd()}>시공사</td>
+                <td style={td({ textAlign: 'left' })}>{formData.constructor}</td>
+                <td style={hd()}>협력사</td>
+                <td style={td({ textAlign: 'left' })}>{formData.partner}</td>
               </tr>
             </tbody>
           </table>
-          <div style={{border:'1px solid #333',padding:'4px 8px',fontSize:9}}>
-            <div style={{fontWeight:'bold',marginBottom:4}}>◑ 특기사항(관급자재 납품)</div>
-            <div>1. 상기 견적 금액은 부가가치세 별도, 현장 도착도 금액입니다.</div>
-            {formData.specialNote && <div>2. {formData.specialNote}</div>}
-          </div>
+
+          <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+            <tbody>
+              <tr style={{ height: 88 }}>
+                <td style={td({ textAlign: 'left', padding: '8px 10px', lineHeight: 2.0, overflow: 'visible', verticalAlign: 'top' })}>
+                  ● 특기사항(관급자재 납품)<br/>
+                  {formData.specialNote && <span style={{ whiteSpace: 'pre-wrap' }}>&nbsp;&nbsp;· {formData.specialNote}</span>}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3 p-4 bg-gray-900">
-        <button onClick={() => exportToExcel(formData, `발주서_${formData.orderNumber}.xlsx`)} className="bg-green-500 text-white font-semibold py-3 rounded-xl text-sm">엑셀 저장</button>
-        <button onClick={() => exportToPdf('preview-document', `발주서_${formData.orderNumber}.pdf`)} className="bg-red-500 text-white font-semibold py-3 rounded-xl text-sm">PDF 저장</button>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, padding: 16, background: '#111827' }}>
+        <button
+          onClick={() => exportToExcel(formData, `발주서_${formData.orderNumber}.xlsx`)}
+          style={{ background: '#22c55e', color: 'white', fontWeight: 600, padding: '12px 0', borderRadius: 12, fontSize: 14, border: 'none', cursor: 'pointer' }}
+        >
+          엑셀 저장
+        </button>
+        <button
+          onClick={() => exportToPdf('preview-document', `발주서_${formData.orderNumber}.pdf`)}
+          style={{ background: '#ef4444', color: 'white', fontWeight: 600, padding: '12px 0', borderRadius: 12, fontSize: 14, border: 'none', cursor: 'pointer' }}
+        >
+          PDF 저장
+        </button>
       </div>
     </div>
   )
