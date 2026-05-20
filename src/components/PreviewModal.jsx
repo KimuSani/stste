@@ -4,7 +4,7 @@ import { formatNumber, parseNumber } from '../utils/format'
 
 const TOTAL_ROWS = 6
 
-export default function PreviewModal({ formData, onClose, onSignatureChange }) {
+export default function PreviewModal({ formData, onClose, onSignatureChange, onHighlightChange }) {
   const total = formData.items.reduce((sum, item) => sum + parseNumber(item.qty) * parseNumber(item.price), 0)
 
   const td = (style = {}) => ({
@@ -61,10 +61,10 @@ export default function PreviewModal({ formData, onClose, onSignatureChange }) {
                         : <span style={{ fontSize: 12 }}>{formData.salesRep}</span>
                       }
                       {formData.signature ? (
-                        <span className="no-pdf" onClick={() => onSignatureChange('')} style={{ cursor: 'pointer', fontSize: 7.5, color: '#bbb', lineHeight: 1 }}>[서명 삭제]</span>
+                        <span className="no-pdf" onClick={() => onSignatureChange('')} style={{ cursor: 'pointer', fontSize: 9, color: 'white', background: '#ef4444', borderRadius: 3, padding: '1px 5px', lineHeight: 1.6, fontWeight: 600 }}>삭제</span>
                       ) : (
-                        <label className="no-pdf" style={{ cursor: 'pointer', fontSize: 7.5, color: '#bbb', lineHeight: 1 }}>
-                          [서명 이미지 넣기]
+                        <label className="no-pdf" style={{ cursor: 'pointer', fontSize: 9, color: 'white', background: '#3b82f6', borderRadius: 3, padding: '1px 5px', lineHeight: 1.6, fontWeight: 600 }}>
+                          서명 추가
                           <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => {
                             const file = e.target.files[0]
                             if (!file) return
@@ -121,8 +121,8 @@ export default function PreviewModal({ formData, onClose, onSignatureChange }) {
 
           <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed', marginBottom: 8 }}>
             <colgroup>
-              <col style={{ width: 32 }} />
-              <col style={{ width: '22%' }} />
+              <col style={{ width: 24 }} />
+              <col style={{ width: '10%' }} />
               <col style={{ width: '12%' }} />
               <col style={{ width: '8%' }} />
               <col style={{ width: '8%' }} />
@@ -158,7 +158,7 @@ export default function PreviewModal({ formData, onClose, onSignatureChange }) {
                 return (
                   <tr key={i} style={{ height: 26 }}>
                     <td style={td()}>{i + 1}</td>
-                    <td style={td({ textAlign: 'left' })}>
+                    <td style={td()}>
                       {hasData ? item.name : (isFirstBlank ? '"이하여백"' : '')}
                     </td>
                     <td style={td()}>{hasData ? item.spec : ''}</td>
@@ -221,7 +221,7 @@ export default function PreviewModal({ formData, onClose, onSignatureChange }) {
           <table style={{ borderCollapse: 'collapse', width: '100%' }}>
             <tbody>
               <tr style={{ height: 88 }}>
-                <td style={td({ textAlign: 'left', padding: '8px 10px', lineHeight: 2.0, overflow: 'visible', verticalAlign: 'top' })}>
+                <td style={td({ textAlign: 'left', padding: '8px 10px', lineHeight: 2.0, overflow: 'visible', verticalAlign: 'top', background: formData.highlight ? '#FEE500' : 'white' })}>
                   ● 특기사항(관급자재 납품)<br/>
                   {formData.specialNote && <span style={{ whiteSpace: 'pre-wrap' }}>&nbsp;&nbsp;· {formData.specialNote}</span>}
                 </td>

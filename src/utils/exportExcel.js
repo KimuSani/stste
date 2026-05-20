@@ -4,6 +4,7 @@ import { parseNumber, formatNumber } from './format'
 const thin = { style: 'thin', color: { argb: 'FF000000' } }
 const border = { top: thin, left: thin, bottom: thin, right: thin }
 const fillGray = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFf0f0f0' } }
+const fillYellow = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEE500' } }
 
 export async function exportToExcel(formData, filename = '발주서.xlsx') {
   const wb = new ExcelJS.Workbook()
@@ -246,12 +247,13 @@ export async function exportToExcel(formData, filename = '발주서.xlsx') {
 
   // ── R24: 특기사항
   ws.getRow(24).height = formData.specialNote ? 36 : 18
-  cell(24, 1,
+  const noteCell = cell(24, 1,
     formData.specialNote
       ? `◑ 특기사항(관급자재 납품)\n  · ${formData.specialNote}`
       : '◑ 특기사항(관급자재 납품)',
     { align: 'left', wrap: true }
   )
+  if (formData.highlight) noteCell.fill = fillYellow
   m(24, 1, 24, 11)
 
   const buffer = await wb.xlsx.writeBuffer()

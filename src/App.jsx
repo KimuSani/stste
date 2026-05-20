@@ -11,7 +11,7 @@ const FACTORIES = ['보령공장', '순천공장', '하동공장']
 const MAX_ITEMS = 6
 
 function emptyItem() {
-  return { name: '', spec: '', unit: '', qty: '', price: '', note: '' }
+  return { name: '', spec: '톤백', unit: '톤', qty: '', price: '', note: '' }
 }
 
 function initialState() {
@@ -40,6 +40,7 @@ function initialState() {
     developer: '강남개발(주)',
     specialNote: '적혀있는 금액은 부가가치세 별도, 현장 도착도 금액입니다.',
     signature: '',
+    highlight: false,
   }
 }
 
@@ -181,16 +182,26 @@ export default function App() {
         </Section>
 
         <Section title="특기사항">
-          <div>
-            <label className="text-xs font-semibold text-gray-500 block mb-1">추가 특기사항 (선택)</label>
-            <textarea
-              value={form.specialNote}
-              onChange={e => set('specialNote', e.target.value)}
-              rows={3}
-              placeholder="1. 상기 견적 금액은 부가가치세 별도, 현장 도착도 금액입니다."
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            />
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs font-semibold text-gray-500">추가 특기사항 (선택)</label>
+            <button
+              onClick={() => set('highlight', !form.highlight)}
+              className={`text-xs font-semibold px-3 py-1 rounded-full border transition-all ${
+                form.highlight
+                  ? 'bg-yellow-400 border-yellow-400 text-yellow-900'
+                  : 'bg-white border-gray-300 text-gray-500'
+              }`}
+            >
+              ★ 강조 표기 {form.highlight ? 'ON' : 'OFF'}
+            </button>
           </div>
+          <textarea
+            value={form.specialNote}
+            onChange={e => set('specialNote', e.target.value)}
+            rows={3}
+            placeholder="1. 상기 견적 금액은 부가가치세 별도, 현장 도착도 금액입니다."
+            className="border border-gray-300 rounded-lg px-3 py-2.5 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
         </Section>
 
       </main>
@@ -207,7 +218,7 @@ export default function App() {
       </div>
 
       {showPreview && (
-        <PreviewModal formData={form} onClose={() => setShowPreview(false)} onSignatureChange={v => set('signature', v)} />
+        <PreviewModal formData={form} onClose={() => setShowPreview(false)} onSignatureChange={v => set('signature', v)} onHighlightChange={v => set('highlight', v)} />
       )}
     </div>
   )

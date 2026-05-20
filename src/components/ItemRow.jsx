@@ -1,5 +1,10 @@
 import { formatNumber, parseNumber } from '../utils/format'
 
+function fmtInput(val) {
+  const n = parseNumber(val)
+  return n > 0 ? formatNumber(n) : (val === '' ? '' : val)
+}
+
 export default function ItemRow({ index, item, onChange, onRemove, totalItems }) {
   const amount = parseNumber(item.qty) * parseNumber(item.price)
   function field(key, val) { onChange(index, { ...item, [key]: val }) }
@@ -17,19 +22,19 @@ export default function ItemRow({ index, item, onChange, onRemove, totalItems })
         </div>
         <div>
           <label className="text-xs text-gray-500 mb-0.5 block">규격</label>
-          <input className={inputCls} value={item.spec} onChange={e => field('spec', e.target.value)} placeholder="규격" />
+          <input className={inputCls} value={item.spec} onChange={e => field('spec', e.target.value)} placeholder="톤백" />
         </div>
         <div>
           <label className="text-xs text-gray-500 mb-0.5 block">단위</label>
-          <input className={inputCls} value={item.unit} onChange={e => field('unit', e.target.value)} placeholder="톤/m³" />
+          <input className={inputCls} value={item.unit} onChange={e => field('unit', e.target.value)} placeholder="톤" />
         </div>
         <div>
           <label className="text-xs text-gray-500 mb-0.5 block">수량</label>
-          <input className={inputCls} type="number" value={item.qty} onChange={e => field('qty', e.target.value)} placeholder="0" min="0" />
+          <input className={inputCls} type="text" inputMode="numeric" value={fmtInput(item.qty)} onChange={e => field('qty', e.target.value.replace(/,/g, ''))} placeholder="0" />
         </div>
         <div>
           <label className="text-xs text-gray-500 mb-0.5 block">단가 (원)</label>
-          <input className={inputCls} type="number" value={item.price} onChange={e => field('price', e.target.value)} placeholder="0" min="0" />
+          <input className={inputCls} type="text" inputMode="numeric" value={fmtInput(item.price)} onChange={e => field('price', e.target.value.replace(/,/g, ''))} placeholder="0" />
         </div>
         <div className="col-span-2">
           <label className="text-xs text-gray-500 mb-0.5 block">금액</label>
