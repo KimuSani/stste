@@ -4,6 +4,23 @@ import { formatNumber, parseNumber } from '../utils/format'
 
 const TOTAL_ROWS = 6
 
+// 엑셀과 동일한 11열 비율: 7.5+11+11+12+8+8+10+9+8+8+7.5 = 100
+const Cols11 = () => (
+  <colgroup>
+    <col style={{ width: '7.5%' }} />
+    <col style={{ width: '11%' }} />
+    <col style={{ width: '11%' }} />
+    <col style={{ width: '12%' }} />
+    <col style={{ width: '8%' }} />
+    <col style={{ width: '8%' }} />
+    <col style={{ width: '10%' }} />
+    <col style={{ width: '9%' }} />
+    <col style={{ width: '8%' }} />
+    <col style={{ width: '8%' }} />
+    <col style={{ width: '7.5%' }} />
+  </colgroup>
+)
+
 export default function PreviewModal({ formData, onClose, onSignatureChange, onHighlightChange }) {
   const total = formData.items.reduce((sum, item) => sum + parseNumber(item.qty) * parseNumber(item.price), 0)
 
@@ -41,6 +58,7 @@ export default function PreviewModal({ formData, onClose, onSignatureChange, onH
             margin: '0 auto',
           }}
         >
+          {/* 제목 + 결재란 */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
             <div style={{ fontSize: 20, fontWeight: 500, letterSpacing: 8, paddingTop: 8, alignSelf: 'center' }}>발 주 서</div>
             <table style={{ borderCollapse: 'collapse', width: 300, tableLayout: 'fixed', flexShrink: 0 }}>
@@ -92,50 +110,41 @@ export default function PreviewModal({ formData, onClose, onSignatureChange, onH
             </table>
           </div>
 
+          {/* ── 발주번호 / 주문일자 / 영업담당자 (11열) */}
           <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed', marginBottom: 8 }}>
-            <colgroup>
-              <col style={{ width: 72 }} /><col /><col style={{ width: 56 }} /><col />
-            </colgroup>
+            <Cols11 />
             <tbody>
               <tr style={{ height: 46 }}>
                 <td style={hd()}>발주번호</td>
-                <td colSpan={3} style={td({ textAlign: 'left', lineHeight: 1.9 })}>
+                <td colSpan={10} style={td({ textAlign: 'left', lineHeight: 1.9 })}>
                   {formData.orderNumber}<br/>
                   <span style={{ fontSize: 10, color: '#555' }}>아래와 같이 발주 하오니 납품하여 주시기 바랍니다.</span>
                 </td>
               </tr>
               <tr style={{ height: 26 }}>
-                <td style={hd()}>주문일자</td>
-                <td style={td({ textAlign: 'left' })}>{formData.orderDate}</td>
-                <td style={hd()}>현장명</td>
-                <td style={td({ textAlign: 'left' })}>{formData.siteName}</td>
+                <td colSpan={2} style={hd()}>주 문 일 자</td>
+                <td colSpan={3} style={td({ textAlign: 'left' })}>{formData.orderDate}</td>
+                <td colSpan={2} style={hd()}>현 장 명</td>
+                <td colSpan={4} style={td({ textAlign: 'left' })}>{formData.siteName}</td>
               </tr>
               <tr style={{ height: 26 }}>
-                <td style={hd()}>영업담당자</td>
-                <td style={td({ textAlign: 'left' })}>{formData.salesRep}</td>
-                <td style={hd()}>접수자</td>
-                <td style={td({ textAlign: 'left' })}>{formData.receiver}</td>
+                <td colSpan={2} style={hd()}>영업담당자</td>
+                <td colSpan={3} style={td({ textAlign: 'left' })}>{formData.salesRep}</td>
+                <td colSpan={2} style={hd()}>접 수 자</td>
+                <td colSpan={4} style={td({ textAlign: 'left' })}>{formData.receiver}</td>
               </tr>
             </tbody>
           </table>
 
+          {/* ── 거리 / 품목 헤더 / 품목 행 / 합계 (11열) */}
           <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed', marginBottom: 8 }}>
-            <colgroup>
-              <col style={{ width: 24 }} />
-              <col style={{ width: '10%' }} />
-              <col style={{ width: '12%' }} />
-              <col style={{ width: '8%' }} />
-              <col style={{ width: '8%' }} />
-              <col style={{ width: '10%' }} />
-              <col style={{ width: '10%' }} />
-              <col style={{ width: '10%' }} />
-            </colgroup>
+            <Cols11 />
             <tbody>
               <tr style={{ height: 26 }}>
                 <td style={hd()}>거리</td>
-                <td style={td({ textAlign: 'left' })}>{formData.distance ? formData.distance + ' km' : ''}</td>
-                <td style={hd()}>희망출하공장</td>
-                <td colSpan={5} style={td({ textAlign: 'left' })}>
+                <td colSpan={2} style={td({ textAlign: 'left' })}>{formData.distance ? formData.distance + ' km' : ''}</td>
+                <td colSpan={2} style={hd()}>희망출하공장</td>
+                <td colSpan={6} style={td({ textAlign: 'left' })}>
                   {['보령공장', '순천공장', '하동공장'].map(f => (
                     <span key={f} style={{ marginRight: 10 }}>
                       {f} [{formData.factory === f ? 'O' : ' '}]
@@ -144,9 +153,14 @@ export default function PreviewModal({ formData, onClose, onSignatureChange, onH
                 </td>
               </tr>
               <tr style={{ height: 24 }}>
-                {['번호', '물품명', '규격', '단위', '수량', '단가', '금액', '비고'].map(h => (
-                  <td key={h} style={hd()}>{h}</td>
-                ))}
+                <td style={hd()}>번호</td>
+                <td colSpan={2} style={hd()}>물 품 명</td>
+                <td style={hd()}>규격</td>
+                <td style={hd()}>단위</td>
+                <td style={hd()}>수량</td>
+                <td style={hd()}>단가</td>
+                <td colSpan={2} style={hd()}>금  액</td>
+                <td colSpan={2} style={hd()}>비  고</td>
               </tr>
               {[...Array(TOTAL_ROWS)].map((_, i) => {
                 const item = formData.items[i]
@@ -158,66 +172,62 @@ export default function PreviewModal({ formData, onClose, onSignatureChange, onH
                 return (
                   <tr key={i} style={{ height: 26 }}>
                     <td style={td()}>{i + 1}</td>
-                    <td style={td()}>
+                    <td colSpan={2} style={td()}>
                       {hasData ? item.name : (isFirstBlank ? '"이하여백"' : '')}
                     </td>
                     <td style={td()}>{hasData ? item.spec : ''}</td>
                     <td style={td()}>{hasData ? item.unit : ''}</td>
                     <td style={td({ textAlign: 'right' })}>{hasData && qty > 0 ? formatNumber(qty) : ''}</td>
                     <td style={td({ textAlign: 'right' })}>{hasData && price > 0 ? formatNumber(price) : ''}</td>
-                    <td style={td({ textAlign: 'right' })}>{amount > 0 ? formatNumber(amount) : ''}</td>
-                    <td style={td()}>{hasData ? item.note : ''}</td>
+                    <td colSpan={2} style={td({ textAlign: 'right' })}>{amount > 0 ? formatNumber(amount) : ''}</td>
+                    <td colSpan={2} style={td()}>{hasData ? item.note : ''}</td>
                   </tr>
                 )
               })}
               <tr style={{ height: 26 }}>
-                <td colSpan={6} style={td({ fontWeight: 500 })}>합 &nbsp;&nbsp; 계</td>
+                <td colSpan={7} style={td({ fontWeight: 500 })}>합 &nbsp;&nbsp; 계</td>
                 <td colSpan={2} style={td({ textAlign: 'right', fontWeight: 600 })}>{total > 0 ? formatNumber(total) : ''}</td>
+                <td colSpan={2} style={td()}></td>
               </tr>
             </tbody>
           </table>
 
+          {/* ── 납품업체 / 현장주소 / 현장관리자 / 시행사 (11열) */}
           <table style={{ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed', marginBottom: 8 }}>
-            <colgroup>
-              <col style={{ width: '15%' }} />
-              <col style={{ width: '28%' }} />
-              <col style={{ width: '13%' }} />
-              <col style={{ width: '18%' }} />
-              <col style={{ width: '10%' }} />
-              <col style={{ width: '16%' }} />
-            </colgroup>
+            <Cols11 />
             <tbody>
               <tr style={{ height: 26 }}>
-                <td style={hd()}>납품업체</td>
-                <td style={td({ textAlign: 'left' })}>{formData.supplier}</td>
-                <td style={hd()}>납품업체담당자</td>
+                <td colSpan={2} style={hd()}>납 품 업 체</td>
+                <td colSpan={4} style={td({ textAlign: 'left' })}>{formData.supplier}</td>
+                <td colSpan={2} style={hd({ fontSize: 9 })}>납품업체담당자</td>
                 <td colSpan={3} style={td({ textAlign: 'left' })}>{formData.supplierContact}</td>
               </tr>
               <tr style={{ height: 26 }}>
-                <td style={hd()}>현장주소</td>
-                <td style={td({ textAlign: 'left' })}>{formData.siteAddress}</td>
-                <td style={hd()}>납품일자</td>
+                <td colSpan={2} style={hd()}>현 장 주 소</td>
+                <td colSpan={4} style={td({ textAlign: 'left' })}>{formData.siteAddress}</td>
+                <td colSpan={2} style={hd()}>납 품 일 자</td>
                 <td colSpan={3} style={td({ textAlign: 'left' })}>{formData.deliveryDate}</td>
               </tr>
               <tr style={{ height: 26 }}>
-                <td style={hd()}>현장관리자</td>
-                <td style={td({ textAlign: 'left' })}>{formData.siteManager}</td>
+                <td colSpan={2} style={hd()}>현장관리자</td>
+                <td colSpan={2} style={td({ textAlign: 'left' })}>{formData.siteManager}</td>
                 <td style={hd()}>H.P</td>
-                <td style={td({ textAlign: 'left' })}>{formData.hp}</td>
+                <td colSpan={2} style={td({ textAlign: 'left' })}>{formData.hp}</td>
                 <td style={hd()}>Tel</td>
-                <td style={td({ textAlign: 'left' })}>{formData.tel}</td>
+                <td colSpan={3} style={td({ textAlign: 'left' })}>{formData.tel}</td>
               </tr>
               <tr style={{ height: 26 }}>
-                <td style={hd()}>시행사, 발주처</td>
-                <td style={td({ textAlign: 'left' })}>{formData.developer}</td>
+                <td colSpan={2} style={hd({ fontSize: 9 })}>시행사, 발주처</td>
+                <td colSpan={2} style={td({ textAlign: 'left' })}>{formData.developer}</td>
                 <td style={hd()}>시공사</td>
-                <td style={td({ textAlign: 'left' })}>{formData.constructor}</td>
+                <td colSpan={2} style={td({ textAlign: 'left' })}>{formData.constructor}</td>
                 <td style={hd()}>협력사</td>
-                <td style={td({ textAlign: 'left' })}>{formData.partner}</td>
+                <td colSpan={3} style={td({ textAlign: 'left' })}>{formData.partner}</td>
               </tr>
             </tbody>
           </table>
 
+          {/* ── 특기사항 */}
           <table style={{ borderCollapse: 'collapse', width: '100%' }}>
             <tbody>
               <tr style={{ height: 88 }}>

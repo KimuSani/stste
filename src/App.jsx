@@ -3,7 +3,6 @@ import FormInput from './components/FormInput'
 import ItemRow from './components/ItemRow'
 import PreviewModal from './components/PreviewModal'
 import SmartDateInput from './components/SmartDateInput'
-import OrderNumberInput from './components/OrderNumberInput'
 import { defaultOrderNumber, todayDisplay } from './utils/format'
 import './App.css'
 
@@ -92,7 +91,7 @@ export default function App() {
       <main className="px-4 py-5 space-y-5 pb-32">
 
         <Section title="기본 정보">
-          <OrderNumberInput value={form.orderNumber} onChange={v => set('orderNumber', v)} />
+          <FormInput label="발주번호" value={form.orderNumber} onChange={v => set('orderNumber', v)} placeholder="예: 2605-27-001" />
           <SmartDateInput label="주문일자" value={form.orderDate} onChange={v => set('orderDate', v)} />
           <div className="grid grid-cols-2 gap-3">
             <FormInput label="영업담당자" value={form.salesRep} onChange={v => set('salesRep', v)} placeholder="이름" />
@@ -166,7 +165,7 @@ export default function App() {
           <div className="border-t border-gray-100 pt-3 space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <FormInput label="현장주소" value={form.siteAddress} onChange={v => set('siteAddress', v)} placeholder="현장 주소" />
-              <SmartDateInput label="납품일자" value={form.deliveryDate} onChange={v => set('deliveryDate', v)} />
+              <FormInput label="납품일자" value={form.deliveryDate} onChange={v => set('deliveryDate', v)} placeholder="예: 2026.06.01" />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <FormInput label="현장관리자" value={form.siteManager} onChange={v => set('siteManager', v)} placeholder="이름" />
