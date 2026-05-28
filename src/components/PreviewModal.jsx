@@ -42,7 +42,7 @@ export default function PreviewModal({ formData, onClose, onSignatureChange, onH
   const total = formData.items.reduce((sum, item) => sum + parseNumber(item.qty) * parseNumber(item.price), 0)
 
   const td = (style = {}) => ({
-    border: '1px solid #000',
+    border: '1px solid #bbb',
     padding: '0 6px',
     textAlign: 'center',
     verticalAlign: 'middle',
