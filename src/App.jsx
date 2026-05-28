@@ -23,9 +23,7 @@ function initialState() {
     distance: '45',
     factory: '순천공장',
     items: [
-      { name: '지오멘트(표층)', spec: 'KS F 2393', unit: '톤', qty: '120', price: '85000', note: '장비주행성' },
-      { name: '지오그리드', spec: 'UX-1500', unit: 'm²', qty: '500', price: '12000', note: '' },
-      { name: '부직포', spec: '200g/m²', unit: 'm²', qty: '600', price: '3500', note: '분리층' },
+      { name: '지오멘트(표층)', spec: '톤백', unit: '톤', qty: '120', price: '85000', note: '장비주행성' },
     ],
     supplier: '(주)한국자재',
     supplierContact: '박담당',
@@ -167,10 +165,9 @@ export default function App() {
               <FormInput label="현장주소" value={form.siteAddress} onChange={v => set('siteAddress', v)} placeholder="현장 주소" />
               <FormInput label="납품일자" value={form.deliveryDate} onChange={v => set('deliveryDate', v)} placeholder="예: 2026.06.01" />
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <FormInput label="현장관리자" value={form.siteManager} onChange={v => set('siteManager', v)} placeholder="이름" />
-              <FormInput label="H.P" value={form.hp} onChange={v => set('hp', v)} type="tel" placeholder="휴대폰" />
-              <FormInput label="Tel" value={form.tel} onChange={v => set('tel', v)} type="tel" placeholder="전화번호" />
+              <FormInput label="연락처" value={form.hp} onChange={v => set('hp', v)} type="tel" placeholder="연락처" />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <FormInput label="시행사, 발주처" value={form.developer} onChange={v => set('developer', v)} placeholder="시행사" />
